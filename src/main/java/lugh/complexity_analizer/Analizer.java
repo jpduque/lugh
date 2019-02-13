@@ -1,21 +1,14 @@
 package lugh.complexity_analizer;
 
-
-import com.sun.tools.javac.resources.compiler;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import lugh.Main;
 
-import javax.tools.*;
-import javax.tools.JavaCompiler.CompilationTask;
-import java.io.*;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Analizer {
@@ -24,18 +17,22 @@ public class Analizer {
     public static void main(String[] args) throws Exception {
         String projectPath = Main.class.getClassLoader().getResource("temp/src").getPath();
         List<File> files = new ArrayList<>();
-        files = filemgmt(projectPath,files);
-        for(File file : files){
+        files = filemgmt(projectPath, files);
+        for (File file : files) {
             compiler(file.getAbsolutePath());
         }
+
+        analyze();
 
 
     }
 
-    public static void compiler(String file){
+    public static void compiler(String file) {
         String folder = "javac " + file;
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash","-c",folder+"/*.java");
+        if(!System.getProperty("os.name").contains("Windows"))
+            processBuilder.command("bash", "-c", folder + "/*.java");
+        else processBuilder.command("cmd.exe", "/C", folder + "/*.java");
         try {
 
             Process process = processBuilder.start();
@@ -54,25 +51,33 @@ public class Analizer {
             int exitVal = process.waitFor();
 
             if (exitVal == 0) {
-//                System.out.println("Success!");
+                System.out.println("Success!");
 //                System.out.println(output);
-            } else {
+            }
+
+             else {
                 int len;
                 if ((len = process.getErrorStream().available()) > 0) {
                     byte[] buf = new byte[len];
                     process.getErrorStream().read(buf);
-                    System.err.println("Command error:\t\""+new String(buf)+"\"");
+                    System.err.println("Command error:\t\"" + new String(buf) + "\"");
                 }
             }
+    } catch(
+    IOException e)
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    {
+        e.printStackTrace();
+    } catch(
+    InterruptedException e)
+
+    {
+        e.printStackTrace();
     }
 
-    public void analyze() throws Exception {
+}
+
+    public static void analyze() throws Exception {
 
         String templatesFolder = Main.class.getClassLoader().getResource("temp/src").getPath();
         List<File> classes = new ArrayList<>();
@@ -97,6 +102,7 @@ public class Analizer {
             fb.setUserPreferences(userPreferences);
             fb.setBugReporter(bugReporter);
             fb.execute();
+            fb.getBugReporter().getProjectStats().getTotalBugs();
             System.out.println("Bug count" + fb.getBugCount());
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +115,7 @@ public class Analizer {
         if (fList != null)
             for (File file : fList) {
                 if (file.isFile() && file.getName().contains(".java")) {
-                    if(!files.contains(file.getParentFile())){
+                    if (!files.contains(file.getParentFile())) {
                         files.add(file.getParentFile());
                     }
                 } else if (file.isDirectory()) {
