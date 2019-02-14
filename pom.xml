@@ -20,18 +20,19 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>3.1.11</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.github.spotbugs</groupId>
-                        <artifactId>spotbugs</artifactId>
-                        <version>3.1.11</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>com.github.spotbugs</groupId>-->
+                <!--<artifactId>spotbugs-maven-plugin</artifactId>-->
+                <!--<version>3.1.11</version>-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>com.github.spotbugs</groupId>-->
+                        <!--<artifactId>spotbugs</artifactId>-->
+                        <!--<version>3.1.11</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+
+            <!--</plugin>-->
         </plugins>
     </build>
     <dependencies>
@@ -49,6 +50,11 @@
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs</artifactId>
             <version>3.1.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
         </dependency>
     </dependencies>
 </project>

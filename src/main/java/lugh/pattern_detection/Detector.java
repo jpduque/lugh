@@ -1,12 +1,17 @@
 package lugh.pattern_detection;
 
+import lugh.Main;
 import lugh.pattern_detection.parser.ClassObject.Abstraction;
 import lugh.pattern_detection.parser.Connection;
 import lugh.pattern_detection.parser.ProjectASTParser;
 import lugh.pattern_detection.patterns.Pattern;
 import lugh.pattern_detection.patterns.PatternDetectionAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +92,7 @@ public class Detector {
         ProjectASTParser.parse(project);
         Pattern pat = Detector.extractPattern(new File(pattern));
         String s = PatternDetectionAlgorithm.DetectPattern_Results(pat, group);
+        createClassesFile(PatternDetectionAlgorithm.DetectPattern_File(pat, group));
         System.out.println(s);
     }
 
@@ -200,53 +206,16 @@ public class Detector {
         return abs;
     }
 
-//    /**
-//     * Constructs a .pattern file out of a Pattern Object
-//     *
-//     * @param p    Input pattern object to export into a .pattern file
-//     * @param file Input file containing the location of the file to be created
-//     */
-//    public static void createPatternFile(Pattern p, File file) {
-//        try {
-//            PrintWriter writer;
-//            writer = new PrintWriter(file.getAbsolutePath(), "UTF-8");
-//            writer.println(p.get_name());
-//            for (ClassObject cb : p.get_Members()) {
-//                writer.println(cb.getName() + " " + cb.get_abstraction() + " " + cb.getAbility());
-//            }
-//            writer.println("End_Members");
-//            for (Connection c : p.get_Connections()) {
-//                writer.println(c.getFrom().getName() + " " + c.getType() + " " + c.getTo().getName());
-//            }
-//            writer.println("End_Connections");
-//            writer.close();
-//        } catch (FileNotFoundException e1) {
-//            System.out.println("File Not Found");
-//            e1.printStackTrace();
-//        } catch (UnsupportedEncodingException e1) {
-//            System.out.println("Unsupported");
-//            e1.printStackTrace();
-//        }
-//    }
-//
-//    /**
-//     * Constructs a File at the input File's location, containing the input String.
-//     *
-//     * @param s    Input String to be written to the file
-//     * @param file Input file containing the location of the file to be created
-//     */
-//    public static void createFile(String s, File file) {
-//        try {
-//            PrintWriter writer;
-//            writer = new PrintWriter(file.getAbsolutePath(), "UTF-8");
-//            writer.print(s);
-//            writer.close();
-//        } catch (FileNotFoundException e1) {
-//            System.out.println("File Not Found");
-//            e1.printStackTrace();
-//        } catch (UnsupportedEncodingException e1) {
-//            System.out.println("Unsupported");
-//            e1.printStackTrace();
-//        }
-//    }
+    private void createClassesFile(List<String> clazzDetected) {
+        String data = StringUtils.join(clazzDetected);
+        data = data.replaceAll("\\[","");
+        data = data.replaceAll("\\]","");
+        String path = Main.class.getClassLoader().getResource("temp/files.txt").getFile();
+        try {
+            Files.write(Paths.get(path), data.getBytes(), StandardOpenOption.APPEND);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

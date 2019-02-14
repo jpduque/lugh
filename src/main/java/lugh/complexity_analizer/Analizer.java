@@ -9,53 +9,39 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Analizer {
 
 
-    public static void main(String[] args) throws Exception {
+    public void runStaticAnalysis() {
         String projectPath = Main.class.getClassLoader().getResource("temp/src").getPath();
         List<File> files = new ArrayList<>();
         files = filemgmt(projectPath, files);
         for (File file : files) {
             compiler(file.getAbsolutePath());
         }
-
         analyze();
-
-
     }
 
-    public static void compiler(String file) {
+    private void compiler(String file) {
         String folder = "javac " + file;
         ProcessBuilder processBuilder = new ProcessBuilder();
-        if(!System.getProperty("os.name").contains("Windows"))
+        if (!System.getProperty("os.name").contains("Windows"))
             processBuilder.command("bash", "-c", folder + "/*.java");
         else processBuilder.command("cmd.exe", "/C", folder + "/*.java");
         try {
-
             Process process = processBuilder.start();
-
             StringBuilder output = new StringBuilder();
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-
-
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
                 output.append(line + "\n");
             }
-
             int exitVal = process.waitFor();
-
-            if (exitVal == 0) {
-                System.out.println("Success!");
-//                System.out.println(output);
-            }
-
-             else {
+            if (exitVal != 0) {
                 int len;
                 if ((len = process.getErrorStream().available()) > 0) {
                     byte[] buf = new byte[len];
@@ -63,53 +49,44 @@ public class Analizer {
                     System.err.println("Command error:\t\"" + new String(buf) + "\"");
                 }
             }
-    } catch(
-    IOException e)
+        } catch (
+                IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
-    {
-        e.printStackTrace();
-    } catch(
-    InterruptedException e)
-
-    {
-        e.printStackTrace();
     }
 
-}
-
-    public static void analyze() throws Exception {
-
+    private void analyze() {
         String templatesFolder = Main.class.getClassLoader().getResource("temp/src").getPath();
-        List<File> classes = new ArrayList<>();
-        classes = filemgmt(templatesFolder, classes);
-
-
         UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
-
         Project project = new Project();
         project.addFile(templatesFolder);
         project.setConfiguration(userPreferences);
         project.setProjectName("Lugh Analysis");
-
         XMLBugReporter bugReporter = new XMLBugReporter(project);
         DetectorFactoryCollection detectorFactoryCollection = new DetectorFactoryCollection();
-        bugReporter.setPriorityThreshold(3);
-
+        bugReporter.setPriorityThreshold(1);
+        IFindBugsEngine fb = new FindBugs2();
         try {
-            IFindBugsEngine fb = new FindBugs2();
             fb.setProject(project);
             fb.setDetectorFactoryCollection(detectorFactoryCollection);
             fb.setUserPreferences(userPreferences);
             fb.setBugReporter(bugReporter);
             fb.execute();
             fb.getBugReporter().getProjectStats().getTotalBugs();
-            System.out.println("Bug count" + fb.getBugCount());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        FindBugs2 fb2 = (FindBugs2) fb;
+        Collection bugs = fb.getBugReporter().getBugCollection().getCollection();
+        List temp = new ArrayList();
+        temp.addAll(bugs);
+        System.out.println("hello world");
+//        fb
+        System.out.println("Bug count" + fb.getBugCount());
     }
 
-    private static List<File> filemgmt(String path, List<File> files) throws Exception {
+    private List<File> filemgmt(String path, List<File> files) {
         File directory = new File(path);
         File[] fList = directory.listFiles();
         if (fList != null)
@@ -124,7 +101,6 @@ public class Analizer {
             }
         return files;
     }
-
 }
 
 

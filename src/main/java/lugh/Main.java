@@ -1,5 +1,6 @@
 package lugh;
 
+import lugh.complexity_analizer.Analizer;
 import lugh.gitApi.GitApi;
 import lugh.pattern_detection.Detector;
 
@@ -12,6 +13,7 @@ public class Main {
 
     private static String encodedUrl = "https://github.com/saeidzebardast/java-design-patterns";
     private static String branch = "master";
+    private static Analizer analizer = new Analizer();
 
     public static void main(String[] args) {
         GitApi gitApi = new GitApi();
@@ -21,8 +23,10 @@ public class Main {
             e.printStackTrace();
         }
 
-//        List<String> patterns = callPatterns();
-//        executePatternDetection(patterns);
+        List<String> patterns = callPatterns();
+        executePatternDetection(patterns);
+        analizer.runStaticAnalysis();
+
     }
 
     private static List<String> callPatterns() {
