@@ -51,4 +51,18 @@ public class GitApi {
             e.printStackTrace();
         }
     }
+
+    public void getAllCommits() throws IOException {
+        String url = "https://api.github.com/repos/saeidzebardast/java-design-patterns/commits";
+        Connection.Response response = Jsoup.connect(url)
+                .ignoreHttpErrors(true)
+                .ignoreContentType(true)
+                .followRedirects(true)
+                .timeout(10000)
+                .method(Connection.Method.GET)
+                .maxBodySize(0)
+                .execute();
+        String body = response.body();
+        System.out.println(body);
+    }
 }

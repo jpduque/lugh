@@ -15,18 +15,19 @@ public class Main {
     private static String branch = "master";
     private static Analizer analizer = new Analizer();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         GitApi gitApi = new GitApi();
-        try {
-            gitApi.getGitRepo(encodedUrl, branch);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    gitApi.getGitRepo(encodedUrl, branch);
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //}
 
-        List<String> patterns = callPatterns();
-        executePatternDetection(patterns);
-        analizer.runStaticAnalysis();
+        //List<String> patterns = callPatterns();
+        //executePatternDetection(patterns);
+        //analizer.runStaticAnalysis();
 
+        gitApi.getAllCommits();
     }
 
     private static List<String> callPatterns() {
