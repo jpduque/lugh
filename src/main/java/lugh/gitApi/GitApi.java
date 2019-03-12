@@ -1,16 +1,21 @@
 package lugh.gitApi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GitApi {
     public void getGitRepo(String gitUrl, String branch) throws IOException{
-        gitUrl = gitUrl + "/archive/"+ branch +".zip";
+        gitUrl = "https://github.com/" + gitUrl + "/archive/"+ branch +".zip";
         String temporalFolder = this.getClass().getClassLoader().getResource("temp").getFile();
         Connection.Response response = Jsoup.connect(gitUrl)
                 .ignoreHttpErrors(true)
@@ -52,9 +57,9 @@ public class GitApi {
         }
     }
 
-    public void getAllCommits() throws IOException {
-        String url = "https://api.github.com/repos/saeidzebardast/java-design-patterns/commits";
-        Connection.Response response = Jsoup.connect(url)
+    private Connection.Response getAllCommits(String project) throws IOException {
+        String url = "https://api.github.com/repos/"+ project +"/commits";
+         return Jsoup.connect(url)
                 .ignoreHttpErrors(true)
                 .ignoreContentType(true)
                 .followRedirects(true)
@@ -62,7 +67,34 @@ public class GitApi {
                 .method(Connection.Method.GET)
                 .maxBodySize(0)
                 .execute();
-        String body = response.body();
-        System.out.println(body);
+    }
+
+    public void cleanTemporal() throws IOException {
+        String temporalFolder = this.getClass().getClassLoader().getResource("temp/src").getFile();
+        Path directory = Paths.get(temporalFolder);
+        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
+                Files.delete(file); // this will work because it's always a File
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                Files.delete(dir); //this will work because Files in the directory are already deleted
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    public List<String> commitList(String project)throws IOException {
+        List<String> commitList = new ArrayList<>();
+        Connection.Response response = getAllCommits(project);
+        ObjectMapper mapper = new ObjectMapper();
+        Response[] gitCommits = mapper.readValue(response.body(), Response[].class);
+        for(Response res : gitCommits){
+            commitList.add(res.getCommit().getTree().getSha());
+        }
+        return commitList;
     }
 }

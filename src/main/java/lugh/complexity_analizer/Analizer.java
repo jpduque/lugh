@@ -8,22 +8,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Analizer {
 
 
-    public void runStaticAnalysis() {
+    public Map<String, Integer> runStaticAnalysis() {
         String projectPath = Main.class.getClassLoader().getResource("temp/src").getPath();
         List<File> files = new ArrayList<>();
         files = filemgmt(projectPath, files);
         for (File file : files) {
             compiler(file.getAbsolutePath());
         }
-        analyze();
+        return analyze();
     }
 
     private void compiler(String file) {
@@ -56,7 +53,7 @@ public class Analizer {
 
     }
 
-    private void analyze() {
+    private Map<String, Integer> analyze() {
         String templatesFolder = Main.class.getClassLoader().getResource("temp/src").getPath();
         UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
         Project project = new Project();
@@ -65,25 +62,37 @@ public class Analizer {
         project.setProjectName("Lugh Analysis");
         XMLBugReporter bugReporter = new XMLBugReporter(project);
         DetectorFactoryCollection detectorFactoryCollection = new DetectorFactoryCollection();
-        bugReporter.setPriorityThreshold(1);
+        bugReporter.setIsRelaxed(false);
+        bugReporter.setPriorityThreshold(4);
         IFindBugsEngine fb = new FindBugs2();
         try {
             fb.setProject(project);
             fb.setDetectorFactoryCollection(detectorFactoryCollection);
             fb.setUserPreferences(userPreferences);
+            bugReporter.setAddMessages(false);
+            bugReporter.setReportStackTrace(false);
+
             fb.setBugReporter(bugReporter);
+            fb.getBugReporter().setErrorVerbosity(0);
             fb.execute();
-            fb.getBugReporter().getProjectStats().getTotalBugs();
+            fb.getBugReporter().finish();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        FindBugs2 fb2 = (FindBugs2) fb;
+        bugReporter.finish();
         Collection bugs = fb.getBugReporter().getBugCollection().getCollection();
         List temp = new ArrayList();
         temp.addAll(bugs);
-        System.out.println("hello world");
-//        fb
-        System.out.println("Bug count" + fb.getBugCount());
+        Map<String, Integer> bugClassifier = new HashMap<>();
+        for(Categories categ : Categories.values()) {
+            bugClassifier.put(String.valueOf(categ),0);
+        }
+        for(Object buggy : temp){
+            BugInstance bugDetected = (BugInstance) buggy;
+            String bugCategory = bugDetected.getBugPattern().getCategory();
+            bugClassifier.put(bugCategory,bugClassifier.get(bugCategory) + 1);
+        }
+        return bugClassifier;
     }
 
     private List<File> filemgmt(String path, List<File> files) {
