@@ -375,8 +375,8 @@ public class PatternDetectionAlgorithm {
      */
     public void PrintSuperCandidates() {
         for (PatternCandidate e : TotalSuperCandidates) {
-            System.out.println("");
-            System.out.println("Candidate of Pattern " + e.getPatternName() + ":");
+//            System.out.println("");
+//            System.out.println("Candidate of Pattern " + e.getPatternName() + ":");
             e.printcandidate();
         }
     }
@@ -393,8 +393,8 @@ public class PatternDetectionAlgorithm {
      */
     public void PrintHyperCandidates() {
         for (PatternCandidate e : TotalHyperCandidates) {
-            System.out.println("");
-            System.out.println("Candidate of Pattern " + e.getPatternName() + ":");
+//            System.out.println("");
+//            System.out.println("Candidate of Pattern " + e.getPatternName() + ":");
             e.printcandidate();
         }
     }
@@ -404,8 +404,8 @@ public class PatternDetectionAlgorithm {
      */
     public void PrintResults() {
         for (PatternCandidate e : Candidates) {
-            System.out.println("");
-            System.out.println("Candidate of Pattern " + e.getPatternName() + ":");
+//            System.out.println("");
+//            System.out.println("Candidate of Pattern " + e.getPatternName() + ":");
             e.printcandidate();
         }
     }

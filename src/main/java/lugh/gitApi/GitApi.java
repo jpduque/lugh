@@ -6,7 +6,10 @@ import net.lingala.zip4j.exception.ZipException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -16,7 +19,8 @@ import java.util.List;
 public class GitApi {
     public void getGitRepo(String gitUrl, String branch) throws IOException{
         gitUrl = "https://github.com/" + gitUrl + "/archive/"+ branch +".zip";
-        String temporalFolder = this.getClass().getClassLoader().getResource("temp").getFile();
+        System.out.println(gitUrl);
+        String temporalFolder = System.getProperty("user.dir")+"/temp";
         Connection.Response response = Jsoup.connect(gitUrl)
                 .ignoreHttpErrors(true)
                 .ignoreContentType(true)
@@ -70,7 +74,7 @@ public class GitApi {
     }
 
     public void cleanTemporal() throws IOException {
-        String temporalFolder = this.getClass().getClassLoader().getResource("temp/src").getFile();
+        String temporalFolder = System.getProperty("user.dir")+"/temp/src";
         Path directory = Paths.get(temporalFolder);
         Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
             @Override

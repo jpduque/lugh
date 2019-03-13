@@ -1,5 +1,6 @@
 package lugh.complexity_analizer;
 
+//import edu.umd.cs.findbugs.;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import lugh.Main;
@@ -14,7 +15,7 @@ public class Analizer {
 
 
     public Map<String, Integer> runStaticAnalysis() {
-        String projectPath = Main.class.getClassLoader().getResource("temp/src").getPath();
+        String projectPath = System.getProperty("user.dir")+"/temp/src";
         List<File> files = new ArrayList<>();
         files = filemgmt(projectPath, files);
         for (File file : files) {
@@ -54,23 +55,24 @@ public class Analizer {
     }
 
     private Map<String, Integer> analyze() {
-        String templatesFolder = Main.class.getClassLoader().getResource("temp/src").getPath();
+        String templatesFolder = System.getProperty("user.dir")+"/temp/src";
         UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
         Project project = new Project();
         project.addFile(templatesFolder);
         project.setConfiguration(userPreferences);
         project.setProjectName("Lugh Analysis");
-        XMLBugReporter bugReporter = new XMLBugReporter(project);
+        BugReporter bugReporter = new BugCollectionBugReporter(project);
         DetectorFactoryCollection detectorFactoryCollection = new DetectorFactoryCollection();
-        bugReporter.setIsRelaxed(false);
+//        bugReporter.setIsRelaxed(false);
         bugReporter.setPriorityThreshold(4);
         IFindBugsEngine fb = new FindBugs2();
         try {
             fb.setProject(project);
             fb.setDetectorFactoryCollection(detectorFactoryCollection);
             fb.setUserPreferences(userPreferences);
-            bugReporter.setAddMessages(false);
-            bugReporter.setReportStackTrace(false);
+//            bugReporter.setReportStackTrace(false);
+//            bugReporter.setAddMessages(false);
+//            bugReporter.setReportStackTrace(false);
 
             fb.setBugReporter(bugReporter);
             fb.getBugReporter().setErrorVerbosity(0);

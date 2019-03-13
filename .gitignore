@@ -27,9 +27,3 @@ buildNumber.properties
 # Maven
 log/
 target/
-
-# Misc
-bmp.log
-chromedriver*
-tfl.properties
-taxi-rank.iml

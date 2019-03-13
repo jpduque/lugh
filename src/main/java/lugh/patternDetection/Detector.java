@@ -210,7 +210,7 @@ public class Detector {
         String data = StringUtils.join(clazzDetected);
         data = data.replaceAll("\\[","");
         data = data.replaceAll("\\]","");
-        String path = Main.class.getClassLoader().getResource("temp/files.txt").getFile();
+        String path = System.getProperty("user.dir")+"/temp/files.txt";
         try {
             Files.write(Paths.get(path), data.getBytes(), StandardOpenOption.APPEND);
         }catch (IOException e) {
