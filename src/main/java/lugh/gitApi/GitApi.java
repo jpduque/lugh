@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 public class GitApi {
     public void getGitRepo(String gitUrl, String branch) throws IOException{
         gitUrl = "https://github.com/" + gitUrl + "/archive/"+ branch +".zip";
-        System.out.println(gitUrl);
         String temporalFolder = System.getProperty("user.dir")+"/temp";
         Connection.Response response = Jsoup.connect(gitUrl)
                 .ignoreHttpErrors(true)
@@ -99,6 +99,7 @@ public class GitApi {
         for(Response res : gitCommits){
             commitList.add(res.getCommit().getTree().getSha());
         }
+        Collections.reverse(commitList);
         return commitList;
     }
 }

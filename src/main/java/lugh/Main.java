@@ -10,21 +10,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import me.tongfei.progressbar.*;
+
 public class Main {
 
     private static String project = "saeidzebardast/java-design-patterns";
     private static Analizer analizer = new Analizer();
+    private static GitApi gitApi = new GitApi();
 
     public static void main(String[] args) throws IOException {
-        GitApi gitApi = new GitApi();
+
         List<String> commitList = gitApi.commitList(project);
         List<Map> retrievedAnalysis = new ArrayList<>();
-        for (String commit : commitList) {
-            gitApi.getGitRepo(project, commit);
-            List<String> patterns = callPatterns();
-            executePatternDetection(patterns);
-            retrievedAnalysis.add(analizer.runStaticAnalysis());
-            gitApi.cleanTemporal();
+        try (ProgressBar pb = new ProgressBar("Running Static Analysis", 100)) {
+            for (String commit : commitList) {
+                gitApi.getGitRepo(project, commit);
+                List<String> patterns = callPatterns();
+                executePatternDetection(patterns);
+                retrievedAnalysis.add(analizer.runStaticAnalysis());
+                gitApi.cleanTemporal();
+                pb.stepTo(((commitList.indexOf(commit)+1)*100)/commitList.size());
+                pb.setExtraMessage("Analyzing");
+            }
         }
         int i = 0;
         for (Map test : retrievedAnalysis) {
@@ -35,7 +42,7 @@ public class Main {
 
     private static List<String> callPatterns() {
         List<String> results = new ArrayList<String>();
-        String templatesFolder = System.getProperty("user.dir")+"/patterns";
+        String templatesFolder = System.getProperty("user.dir") + "/patterns";
         File[] files = new File(templatesFolder).listFiles();
         for (File file : files) {
             if (file.isFile()) {
@@ -47,32 +54,11 @@ public class Main {
 
     private static void executePatternDetection(List<String> patterns) {
         Detector detector = new Detector();
-        String sourceFolder = System.getProperty("user.dir")+"/temp";
-        String templatesFolder = System.getProperty("user.dir")+"/patterns";
+        String sourceFolder = System.getProperty("user.dir") + "/temp";
+        String templatesFolder = System.getProperty("user.dir") + "/patterns";
         for (String pattern : patterns) {
             detector.runAnalysis(sourceFolder, templatesFolder + "/" + pattern);
         }
     }
-
-    //TODO fix this
-
-//    try (ProgressBar pb = new ProgressBar("Test", 100)) { // name, initial max
-//        // Use ProgressBar("Test", 100, ProgressBarStyle.ASCII) if you want ASCII output style
-//        for (T x : collection) {
-//    ...
-//            pb.step(); // step by 1
-//            pb.stepBy(n); // step by n
-//    ...
-//            pb.stepTo(n); // step directly to n
-//    ...
-//            pb.maxHint(n);
-//            // reset the max of this progress bar as n. This may be useful when the program
-//            // gets new information about the current progress.
-//            // Can set n to be less than zero: this means that this progress bar would become
-//            // indefinite: the max would be unknown.
-//    ...
-//            pb.setExtraMessage("Reading..."); // Set extra message to display at the end of the bar
-//        }
-//    }
 }
 

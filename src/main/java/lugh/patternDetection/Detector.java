@@ -93,7 +93,7 @@ public class Detector {
         Pattern pat = Detector.extractPattern(new File(pattern));
         String s = PatternDetectionAlgorithm.DetectPattern_Results(pat, group);
         createClassesFile(PatternDetectionAlgorithm.DetectPattern_File(pat, group));
-        System.out.println(s);
+//        System.out.println(s);
     }
 
 
