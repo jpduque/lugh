@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lugh.predictor.Statistical;
 import me.tongfei.progressbar.*;
+import sun.jvm.hotspot.runtime.StaticBaseConstructor;
 
 public class Main {
 
@@ -19,7 +21,8 @@ public class Main {
     private static GitApi gitApi = new GitApi();
 
     public static void main(String[] args) throws IOException {
-
+//        String owner = args[0];
+//        String project = args[1];
         List<String> commitList = gitApi.commitList(project);
         List<Map> retrievedAnalysis = new ArrayList<>();
         try (ProgressBar pb = new ProgressBar("Running Static Analysis", 100)) {
@@ -33,11 +36,12 @@ public class Main {
                 pb.setExtraMessage("Analyzing");
             }
         }
-        int i = 0;
-        for (Map test : retrievedAnalysis) {
-            System.out.println("*********************************** Commit " + ++i + "******************");
-            System.out.println(test.values());
-        }
+//        int i = 0;
+//        for (Map test : retrievedAnalysis) {
+//            System.out.println("*********************************** Commit " + ++i + "******************");
+//            System.out.println(test.values());
+//        }
+        Statistical.map(retrievedAnalysis);
     }
 
     private static List<String> callPatterns() {
