@@ -3,6 +3,8 @@ package lugh;
 import lugh.complexity_analizer.Analizer;
 import lugh.gitApi.GitApi;
 import lugh.patternDetection.Detector;
+import lugh.predictor.Statistical;
+import me.tongfei.progressbar.ProgressBar;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,19 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import lugh.predictor.Statistical;
-import me.tongfei.progressbar.*;
-import sun.jvm.hotspot.runtime.StaticBaseConstructor;
-
 public class Main {
 
-    private static String project = "saeidzebardast/java-design-patterns";
+//    private static String project = "saeidzebardast/java-design-patterns";
     private static Analizer analizer = new Analizer();
     private static GitApi gitApi = new GitApi();
+    private static Statistical forecaster = new Statistical();
 
-    public static void main(String[] args) throws IOException {
-//        String owner = args[0];
-//        String project = args[1];
+    public static void main(String args[]) throws IOException {
+        String owner = args[0];
+        String repo = args[1];
+        String project = owner+"/"+repo;
         List<String> commitList = gitApi.commitList(project);
         List<Map> retrievedAnalysis = new ArrayList<>();
         try (ProgressBar pb = new ProgressBar("Running Static Analysis", 100)) {
@@ -36,12 +36,9 @@ public class Main {
                 pb.setExtraMessage("Analyzing");
             }
         }
-//        int i = 0;
-//        for (Map test : retrievedAnalysis) {
-//            System.out.println("*********************************** Commit " + ++i + "******************");
-//            System.out.println(test.values());
-//        }
-        Statistical.map(retrievedAnalysis);
+        System.out.println(retrievedAnalysis.get(retrievedAnalysis.size()-1));
+        retrievedAnalysis.remove(retrievedAnalysis.get(retrievedAnalysis.size()-1));
+        forecaster.executeForecast(retrievedAnalysis);
     }
 
     private static List<String> callPatterns() {
