@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 @SuppressWarnings("serial")
 public class Detector {
@@ -87,6 +88,13 @@ public class Detector {
         return new String[]{project.trim(), pattern.trim(), stringGroup.trim().toLowerCase()};
     }
 
+
+    private int dpcount = 0;
+
+    public int getDpcount() {
+        return dpcount;
+    }
+
     public void runAnalysis(String project, String pattern) {
         boolean group = false;
         ProjectASTParser.parse(project);
@@ -94,7 +102,12 @@ public class Detector {
         String s = PatternDetectionAlgorithm.DetectPattern_Results(pat, group);
         createClassesFile(PatternDetectionAlgorithm.DetectPattern_File(pat, group));
 //        System.out.println(s);
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile("\\d+");
+        Matcher m = p.matcher(s);
+        m.find();
+        dpcount = Integer.parseInt(m.group(0));
     }
+
 
 
     /**

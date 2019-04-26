@@ -1,6 +1,7 @@
 package lugh.complexity_analizer;
 
 //import edu.umd.cs.findbugs.;
+
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import lugh.Main;
@@ -13,9 +14,10 @@ import java.util.*;
 
 public class Analizer {
 
+    private int filesNum = 0;
 
     public Map<String, Integer> runStaticAnalysis() {
-        String projectPath = System.getProperty("user.dir")+"/temp/src";
+        String projectPath = System.getProperty("user.dir") + "/temp/src";
         List<File> files = new ArrayList<>();
         files = filemgmt(projectPath, files);
         for (File file : files) {
@@ -55,7 +57,7 @@ public class Analizer {
     }
 
     private Map<String, Integer> analyze() {
-        String templatesFolder = System.getProperty("user.dir")+"/temp/src";
+        String templatesFolder = System.getProperty("user.dir") + "/temp/src";
         UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
         Project project = new Project();
         project.addFile(templatesFolder);
@@ -86,13 +88,13 @@ public class Analizer {
         List temp = new ArrayList();
         temp.addAll(bugs);
         Map<String, Integer> bugClassifier = new HashMap<>();
-        for(Categories categ : Categories.values()) {
-            bugClassifier.put(String.valueOf(categ),0);
+        for (Categories categ : Categories.values()) {
+            bugClassifier.put(String.valueOf(categ), 0);
         }
-        for(Object buggy : temp){
+        for (Object buggy : temp) {
             BugInstance bugDetected = (BugInstance) buggy;
             String bugCategory = bugDetected.getBugPattern().getCategory();
-            bugClassifier.put(bugCategory,bugClassifier.get(bugCategory) + 1);
+            bugClassifier.put(bugCategory, bugClassifier.get(bugCategory) + 1);
         }
         return bugClassifier;
     }
@@ -103,6 +105,7 @@ public class Analizer {
         if (fList != null)
             for (File file : fList) {
                 if (file.isFile() && file.getName().contains(".java")) {
+                    filesNum = filesNum +1;
                     if (!files.contains(file.getParentFile())) {
                         files.add(file.getParentFile());
                     }
@@ -111,6 +114,10 @@ public class Analizer {
                 }
             }
         return files;
+    }
+
+    public int getFilesNum() {
+        return filesNum;
     }
 }
 

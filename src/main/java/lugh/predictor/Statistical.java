@@ -8,10 +8,20 @@ import java.util.Map;
 
 public class Statistical {
 
-    public void executeForecast(List<Map> bugs) {
-        List<Integer> omegaSum = new ArrayList<>();
-        List<Map<String, Integer>> phiSum = new ArrayList<>();
-        List<Map<String, Double>> probabilities = new ArrayList<>();
+    private Map<String, Double> increaseProbability;
+    private Map<String, Double> finalProbability;
+    private Map<String, Double> forecastValue;
+    private Map<String, Integer> intForecastValue;
+    private List<Map<String, Double>> probabilities;
+    private List<Map<String,Integer>> bugs;
+    private List<Integer> omegaSum;
+    private List<Map<String, Integer>> phiSum;
+
+    public Map<String, Integer> executeForecast(List<Map<String, Integer>> bugs) {
+        this.bugs = bugs;
+        omegaSum = new ArrayList<>();
+        phiSum = new ArrayList<>();
+        probabilities = new ArrayList<>();
 
         int index = 0;
         for (Map<String, Integer> data : bugs) {
@@ -37,15 +47,15 @@ public class Statistical {
             }
             probabilities.add(probs);
         }
-        forecast(probabilities, phiSum);
+        return forecast(probabilities, phiSum);
     }
 
-    private void forecast(List<Map<String, Double>> probMatrix, List<Map<String, Integer>> bugsMatrix) {
+    private Map<String, Integer> forecast(List<Map<String, Double>> probMatrix, List<Map<String, Integer>> bugsMatrix) {
         Map<String, Double> commit = probMatrix.get(0);
-        Map<String, Double> finalProbability = new HashMap<>();
-        Map<String, Double> increaseProbability = new HashMap<>();
-        Map<String, Double> forecastValue = new HashMap<>();
-        Map<String, Integer> intForecastValue = new HashMap<>();
+        finalProbability = new HashMap<>();
+        increaseProbability = new HashMap<>();
+        forecastValue = new HashMap<>();
+        intForecastValue = new HashMap<>();
         for (Map<String, Double> comm : probMatrix) {
             for (String qa : comm.keySet()) {
                 if (Double.isNaN(commit.get(qa)) || comm.get(qa) > commit.get(qa))
@@ -74,10 +84,70 @@ public class Statistical {
         for (String qa : forecastValue.keySet()) {
             intForecastValue.put(qa, forecastValue.get(qa).intValue());
         }
-//        System.out.println(increaseProbability);
-//        System.out.println(finalProbability);
-//        System.out.println(forecastValue);
-        System.out.println("Forecasted Probability");
-        System.out.println(intForecastValue);
+        return intForecastValue;
+    }
+
+    public Map<String, Double> getIncreaseProbability() {
+        return increaseProbability;
+    }
+
+    public void setIncreaseProbability(Map<String, Double> increaseProbability) {
+        this.increaseProbability = increaseProbability;
+    }
+
+    public Map<String, Double> getFinalProbability() {
+        return finalProbability;
+    }
+
+    public void setFinalProbability(Map<String, Double> finalProbability) {
+        this.finalProbability = finalProbability;
+    }
+
+    public Map<String, Double> getForecastValue() {
+        return forecastValue;
+    }
+
+    public void setForecastValue(Map<String, Double> forecastValue) {
+        this.forecastValue = forecastValue;
+    }
+
+    public Map<String, Integer> getIntForecastValue() {
+        return intForecastValue;
+    }
+
+    public void setIntForecastValue(Map<String, Integer> intForecastValue) {
+        this.intForecastValue = intForecastValue;
+    }
+
+    public List<Map<String, Double>> getProbabilities() {
+        return probabilities;
+    }
+
+    public void setProbabilities(List<Map<String, Double>> probabilities) {
+        this.probabilities = probabilities;
+    }
+
+    public List<Map<String,Integer>> getBugs() {
+        return bugs;
+    }
+
+    public void setBugs(List<Map<String,Integer>> bugs) {
+        this.bugs = bugs;
+    }
+
+    public List<Map<String, Integer>> getPhiSum() {
+        return phiSum;
+    }
+
+    public void setPhiSum(List<Map<String, Integer>> phiSum) {
+        this.phiSum = phiSum;
+    }
+
+    public List<Integer> getOmegaSum() {
+        return omegaSum;
+    }
+
+    public void setOmegaSum(List<Integer> omegaSum) {
+        this.omegaSum = omegaSum;
     }
 }

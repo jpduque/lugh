@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class Main {
 
-//    private static String project = "saeidzebardast/java-design-patterns";
     private static Analizer analizer = new Analizer();
     private static GitApi gitApi = new GitApi();
     private static Statistical forecaster = new Statistical();
@@ -22,9 +21,9 @@ public class Main {
     public static void main(String args[]) throws IOException {
         String owner = args[0];
         String repo = args[1];
-        String project = owner+"/"+repo;
+        String project = owner + "/" + repo;
         List<String> commitList = gitApi.commitList(project);
-        List<Map> retrievedAnalysis = new ArrayList<>();
+        List<Map<String, Integer>> retrievedAnalysis = new ArrayList<>();
         try (ProgressBar pb = new ProgressBar("Running Static Analysis", 100)) {
             for (String commit : commitList) {
                 gitApi.getGitRepo(project, commit);
@@ -32,16 +31,14 @@ public class Main {
                 executePatternDetection(patterns);
                 retrievedAnalysis.add(analizer.runStaticAnalysis());
                 gitApi.cleanTemporal();
-                pb.stepTo(((commitList.indexOf(commit)+1)*100)/commitList.size());
+                pb.stepTo(((commitList.indexOf(commit) + 1) * 100) / commitList.size());
                 pb.setExtraMessage("Analyzing");
             }
         }
-        System.out.println(retrievedAnalysis.get(retrievedAnalysis.size()-1));
-        retrievedAnalysis.remove(retrievedAnalysis.get(retrievedAnalysis.size()-1));
-        forecaster.executeForecast(retrievedAnalysis);
+        System.out.println(forecaster.executeForecast(retrievedAnalysis));
     }
 
-    private static List<String> callPatterns() {
+    public static List<String> callPatterns() {
         List<String> results = new ArrayList<String>();
         String templatesFolder = System.getProperty("user.dir") + "/patterns";
         File[] files = new File(templatesFolder).listFiles();
@@ -53,13 +50,16 @@ public class Main {
         return results;
     }
 
-    private static void executePatternDetection(List<String> patterns) {
+    public static int executePatternDetection(List<String> patterns) {
+        int count = 0;
         Detector detector = new Detector();
         String sourceFolder = System.getProperty("user.dir") + "/temp";
         String templatesFolder = System.getProperty("user.dir") + "/patterns";
         for (String pattern : patterns) {
             detector.runAnalysis(sourceFolder, templatesFolder + "/" + pattern);
+            count = count + detector.getDpcount();
         }
+        return count;
     }
 }
 

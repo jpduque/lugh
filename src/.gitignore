@@ -20,6 +20,4 @@ bmp.log
 chromedriver*
 tfl.properties
 taxi-rank.iml
-
-# Sauce Labs
-sauce-connect/
+temp/
