@@ -1,5 +1,7 @@
 package lugh;
 
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lugh.complexity_analizer.Analizer;
 import lugh.gitApi.GitApi;
 import lugh.patternDetection.Detector;
@@ -21,6 +23,7 @@ public class Main {
     public static void main(String args[]) throws IOException {
         String owner = args[0];
         String repo = args[1];
+        AsciiTable at = new AsciiTable();
         String project = owner + "/" + repo;
         List<String> commitList = gitApi.commitList(project);
         List<Map<String, Integer>> retrievedAnalysis = new ArrayList<>();
@@ -35,7 +38,15 @@ public class Main {
                 pb.setExtraMessage("Analyzing");
             }
         }
-        System.out.println(forecaster.executeForecast(retrievedAnalysis));
+        Map<String, Integer> forecastedAnalysis = forecaster.executeForecast(retrievedAnalysis);
+        at.addRule();
+        at.addRow(forecastedAnalysis.keySet());
+        at.addRule();
+        at.addRow(forecastedAnalysis.values());
+        at.addRule();
+        at.setTextAlignment(TextAlignment.CENTER);
+        System.out.println(at.render());
+
     }
 
     public static List<String> callPatterns() {
