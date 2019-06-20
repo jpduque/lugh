@@ -11,7 +11,7 @@ In order to generate the executable jar, in your command line tool you must run 
 
 ## Usage
 
-In order to run Lugh and perform the analysis the following command should be run on the command line tool `java -jar Lugh.jar {Repository Owner} {Repository Project Name}` 
+In order to run Lugh and perform the analysis the following command should be run on the command line tool `java -jar Lugh.jar {Repository Owner} {Repository Project Name}`.
 
 ## Results
 
